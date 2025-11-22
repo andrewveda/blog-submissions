@@ -1,13 +1,13 @@
-name: GitHub Pages Submission
-description: Submit your GitHub Pages assignment
-title: "Submission: <Your Name and Register Number>"
+name: GitHub Website Submission
+description: Submit your GitHub Blog 
+title: 
 labels: ["submission"]
 body:
   - type: input
     id: name
     attributes:
       label: Your Full Name
-      placeholder: "e.g., Anu B"
+      placeholder: "e.g., Barry Allen"
     validations:
       required: true
 
@@ -15,7 +15,7 @@ body:
     id: reg
     attributes:
       label: Register Number
-      placeholder: "e.g., 22CS001"
+      placeholder: "e.g., 25CYS007"
     validations:
       required: true
 
