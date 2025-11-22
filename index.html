@@ -128,18 +128,47 @@ fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
 
       const name = nameMatch ? nameMatch[1].trim() : "Unknown";
       const reg = regMatch ? regMatch[1].trim() : "Unknown";
-      const rawLink = linkMatch ? linkMatch[1].trim() : "#";
-      const link = rawLink.startsWith('http') ? rawLink : 'https://' + rawLink;
+
+      let rawLink = linkMatch ? linkMatch[1].trim() : "#";
+      let link = rawLink.startsWith("http") ? rawLink : "https://" + rawLink;
 
       const tr = document.createElement("tr");
 
+      // placeholder row
       tr.innerHTML = `
         <td data-label="Name">${name}</td>
         <td data-label="Register Number">${reg}</td>
-        <td data-label="Website"><a href="${link}" target="_blank">Visit Site</a></td>
+        <td data-label="Website"><span class="checking">Checking...</span></td>
       `;
 
       tbody.appendChild(tr);
+
+      const td = tr.querySelector("td[data-label='Website']");
+      const statusSpan = td.querySelector(".checking");
+
+      // Detect repo link
+      const looksLikeRepo = link.includes("github.com/") && !link.includes("github.io");
+
+      if (looksLikeRepo) {
+        statusSpan.innerHTML = `<span style="color:red;font-weight:bold;">Invalid: Repo Link</span>`;
+        return;
+      }
+
+      // Check if site is live
+      fetch(link, { method: "HEAD" })
+        .then(res => {
+          if (res.ok) {
+            statusSpan.innerHTML =
+              `<a href="${link}" target="_blank" style="color:green;font-weight:bold;">Visit Site ✔</a>`;
+          } else {
+            statusSpan.innerHTML =
+              `<span style="color:red;font-weight:bold;">Not Live ✖</span>`;
+          }
+        })
+        .catch(() => {
+          statusSpan.innerHTML =
+            `<span style="color:red;font-weight:bold;">Invalid URL ✖</span>`;
+        });
     });
   });
 </script>
