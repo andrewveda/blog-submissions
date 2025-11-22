@@ -1,6 +1,6 @@
 name: GitHub Website Submission
 description: Submit your GitHub Blog 
-title: ""
+title: "Enter your blog name"
 labels: ["submission"]
 body:
   - type: input
