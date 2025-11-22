@@ -1,0 +1,19 @@
+<ul id="issues"></ul>
+
+<script>
+fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
+  .then(response => response.json())
+  .then(data => {
+    const list = document.getElementById("issues");
+    data.forEach(issue => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${issue.title}</strong><br>
+        ${issue.body.replace(/\n/g, "<br>")}
+        <br><a href="${issue.html_url}" target="_blank">View Issue</a>
+        <hr>
+      `;
+      list.appendChild(li);
+    });
+  });
+</script>
