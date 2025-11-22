@@ -1,5 +1,108 @@
-<h2>Student Submissions</h2>
-<table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #f2f0e6; /* faded parchment */
+    font-family: "Georgia", "Times New Roman", serif;
+    color: #2b251c;
+  }
+
+  h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #2a2a2a;
+    margin-bottom: 20px;
+    text-shadow: 0px 0px 1px #000;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fbfaf5;
+    border: 3px solid #4a3f2b; /* dark brown */
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.25);
+  }
+
+  th {
+    background: #d6c8a5; /* money beige */
+    padding: 12px 8px;
+    text-align: left;
+    font-size: 1rem;
+    color: #2b251c;
+    border-bottom: 3px solid #4a3f2b;
+  }
+
+  td {
+    padding: 14px 10px;
+    border-bottom: 2px solid #c8b893;
+    font-size: 1rem;
+  }
+
+  tr:nth-child(even) {
+    background: #f4efe3;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  a {
+    color: #003366;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  /* Mobile Optimization */
+  @media (max-width: 700px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+      width: 100%;
+    }
+
+    tr {
+      margin-bottom: 20px;
+      border: 2px solid #b8a985;
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8f5ed;
+    }
+
+    th {
+      display: none;
+    }
+
+    td {
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 4px;
+      font-size: 1.1rem;
+    }
+
+    td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: #2b251c;
+      margin-right: 10px;
+    }
+  }
+</style>
+
+</head>
+
+<body>
+
+<h2>First Year Cyber Security (2025–2029) Blog Directory</h2>
+
+<table>
   <thead>
     <tr>
       <th>Name</th>
@@ -19,24 +122,27 @@ fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
     issues.forEach(issue => {
       const body = issue.body;
 
-      // Extract fields from the issue body
       const nameMatch = body.match(/Your Full Name\s*\n([^\n]+)/);
       const regMatch = body.match(/Register Number\s*\n([^\n]+)/);
       const linkMatch = body.match(/Website Link\s*\n([^\n]+)/);
 
       const name = nameMatch ? nameMatch[1].trim() : "Unknown";
       const reg = regMatch ? regMatch[1].trim() : "Unknown";
-      const link = linkMatch ? linkMatch[1].trim() : "#";
+      const rawLink = linkMatch ? linkMatch[1].trim() : "#";
+      const link = rawLink.startsWith('http') ? rawLink : 'https://' + rawLink;
 
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-        <td>${name}</td>
-        <td>${reg}</td>
-        <td><a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank">Visit Site</a></td>
+        <td data-label="Name">${name}</td>
+        <td data-label="Register Number">${reg}</td>
+        <td data-label="Website"><a href="${link}" target="_blank">Visit Site</a></td>
       `;
 
       tbody.appendChild(tr);
     });
   });
 </script>
+
+</body>
+</html>
