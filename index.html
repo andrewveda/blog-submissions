@@ -1,132 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cyber Security Blog Directory</title>
 
 <style>
   body {
     margin: 0;
-    padding: 20px;
-    background: #f2f0e6; /* faded parchment */
-    font-family: "Georgia", "Times New Roman", serif;
-    color: #2b251c;
+    padding: 16px;
+    background: #faf8f2;
+    font-family: "Inter", sans-serif;
+    color: #222;
   }
 
   h2 {
+    font-size: 1.4rem;
     text-align: center;
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #2a2a2a;
     margin-bottom: 20px;
-    text-shadow: 0px 0px 1px #000;
+    font-weight: 700;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fbfaf5;
-    border: 3px solid #4a3f2b; /* dark brown */
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(0,0,0,0.25);
+  .entry {
+    padding: 14px 12px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-  th {
-    background: #d6c8a5; /* money beige */
-    padding: 12px 8px;
-    text-align: left;
-    font-size: 1rem;
-    color: #2b251c;
-    border-bottom: 3px solid #4a3f2b;
+  .line1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
-  td {
-    padding: 14px 10px;
-    border-bottom: 2px solid #c8b893;
-    font-size: 1rem;
+  .reg {
+    font-weight: 500;
+    color: #444;
   }
 
-  tr:nth-child(even) {
-    background: #f4efe3;
-  }
-
-  tr:last-child td {
-    border-bottom: none;
+  .line2 {
+    font-size: 0.95rem;
   }
 
   a {
-    color: #003366;
-    font-weight: bold;
-    text-decoration: underline;
+    font-weight: 600;
+    text-decoration: none;
   }
 
- /* Mobile Optimization (FULL FIX) */
-@media (max-width: 700px) {
+  .link-live { color: #0a7a28; }
+  .link-dead { color: #b40000; }
 
-  table {
-    border: none;
-    width: 100% !important;
+  /* Ultra mobile optimisation */
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+    .entry {
+      padding: 12px 10px;
+    }
+    .line1 {
+      font-size: 1rem;
+    }
+    .line2 {
+      font-size: 0.9rem;
+    }
   }
 
-  thead {
-    display: none;
-  }
-
-  tbody, tr, td {
-    display: block;
-    width: 100% !important;
-  }
-
-  tr {
-    background: #f8f5ed;
-    margin-bottom: 18px;
-    padding: 14px;
-    border-radius: 10px;
-    border: 2px solid #b8a985;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
-  }
-
-  td {
-    padding: 8px 0;
-    font-size: 1.1rem;
-    border: none !important;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    color: #2b251c;
-    margin-right: 10px;
-    flex-shrink: 0;
-  }
-}
 </style>
-
 </head>
 
 <body>
 
-<h2>First Year Cyber Security (2025–2029) Blog Directory</h2>
+<h2>First Year Cyber Security (2025–2029)<br>Blog Directory</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Register Number</th>
-      <th>Website</th>
-    </tr>
-  </thead>
-  <tbody id="submissions-table"></tbody>
-</table>
+<div id="list"></div>
 
 <script>
 fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
-  .then(response => response.json())
+  .then(res => res.json())
   .then(issues => {
-    const tbody = document.getElementById("submissions-table");
+    const list = document.getElementById("list");
 
     issues.forEach(issue => {
       const body = issue.body;
@@ -141,42 +100,43 @@ fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
       let rawLink = linkMatch ? linkMatch[1].trim() : "#";
       let link = rawLink.startsWith("http") ? rawLink : "https://" + rawLink;
 
-      const tr = document.createElement("tr");
+      const entry = document.createElement("div");
+      entry.className = "entry";
 
-      // placeholder row
-      tr.innerHTML = `
-        <td data-label="Name">${name}</td>
-        <td data-label="Register Number">${reg}</td>
-        <td data-label="Website"><span class="checking">Checking...</span></td>
+      entry.innerHTML = `
+        <div class="line1">
+          <span>${name}</span>
+          <span class="reg">(${reg})</span>
+        </div>
+        <div class="line2"><span class="checking">Checking link…</span></div>
       `;
 
-      tbody.appendChild(tr);
+      list.appendChild(entry);
 
-      const td = tr.querySelector("td[data-label='Website']");
-      const statusSpan = td.querySelector(".checking");
+      const line2 = entry.querySelector(".checking");
 
-      // Detect repo link
+      // Reject direct repo links
       const looksLikeRepo = link.includes("github.com/") && !link.includes("github.io");
-
       if (looksLikeRepo) {
-        statusSpan.innerHTML = `<span style="color:red;font-weight:bold;">Invalid: Repo Link</span>`;
+        line2.innerHTML =
+          `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>`;
         return;
       }
 
-      // Check if site is live
+      // Check if live
       fetch(link, { method: "HEAD" })
-        .then(res => {
-          if (res.ok) {
-            statusSpan.innerHTML =
-              `<a href="${link}" target="_blank" style="color:green;font-weight:bold;">Visit Site ✔</a>`;
+        .then(r => {
+          if (r.ok) {
+            line2.innerHTML =
+              `<a href="${link}" target="_blank" class="link-live">Visit Site ✔</a>`;
           } else {
-            statusSpan.innerHTML =
-              `<span style="color:red;font-weight:bold;">Not Live ✖</span>`;
+            line2.innerHTML =
+              `<span class="link-dead">Not Live ✖</span>`;
           }
         })
         .catch(() => {
-          statusSpan.innerHTML =
-            `<span style="color:red;font-weight:bold;">Invalid URL ✖</span>`;
+          line2.innerHTML =
+            `<span class="link-dead">Invalid URL ✖</span>`;
         });
     });
   });
