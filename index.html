@@ -1,19 +1,42 @@
-<ul id="issues"></ul>
+<h2>Student Submissions</h2>
+<table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Register Number</th>
+      <th>Website</th>
+    </tr>
+  </thead>
+  <tbody id="submissions-table"></tbody>
+</table>
 
 <script>
 fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
   .then(response => response.json())
-  .then(data => {
-    const list = document.getElementById("issues");
-    data.forEach(issue => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <strong>${issue.title}</strong><br>
-        ${issue.body.replace(/\n/g, "<br>")}
-        <br><a href="${issue.html_url}" target="_blank">View Issue</a>
-        <hr>
+  .then(issues => {
+    const tbody = document.getElementById("submissions-table");
+
+    issues.forEach(issue => {
+      const body = issue.body;
+
+      // Extract fields from the issue body
+      const nameMatch = body.match(/Your Full Name\s*\n([^\n]+)/);
+      const regMatch = body.match(/Register Number\s*\n([^\n]+)/);
+      const linkMatch = body.match(/Website Link\s*\n([^\n]+)/);
+
+      const name = nameMatch ? nameMatch[1].trim() : "Unknown";
+      const reg = regMatch ? regMatch[1].trim() : "Unknown";
+      const link = linkMatch ? linkMatch[1].trim() : "#";
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${name}</td>
+        <td>${reg}</td>
+        <td><a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank">Visit Site</a></td>
       `;
-      list.appendChild(li);
+
+      tbody.appendChild(tr);
     });
   });
 </script>
