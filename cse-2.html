@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Directory</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #fdfbf7, #f3ebd9); /* Premium light cream gradient */
+    font-family: "Inter", -apple-system, sans-serif;
+    color: #3b302a; /* Deep bronze/charcoal for premium contrast */
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #926c2a; /* Rich gold */
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    line-height: 1.5;
+  }
+
+  #controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  select {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #d4b986; /* Subtle gold border */
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #3b302a;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(146, 108, 42, 0.1);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  
+  select:focus {
+    border-color: #926c2a;
+  }
+
+  .entry {
+    padding: 16px 14px;
+    margin-bottom: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 14px;
+    border: 1px solid #e6d5b3;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 14px rgba(146, 108, 42, 0.08); /* Soft gold-tinted shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .entry:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(146, 108, 42, 0.15);
+  }
+
+  .line1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reg {
+    font-weight: 500;
+    color: #8c7654; /* Muted bronze */
+  }
+
+  .line2 {
+    font-size: 0.95rem;
+  }
+
+  .link-live { color: #5b7a46; font-weight: 600; text-decoration: none; transition: opacity 0.2s; }
+  .link-live:hover { opacity: 0.8; }
+  .link-dead { color: #a84545; font-weight: 600; }
+
+</style>
+</head>
+
+<body>
+
+<h2>First Year Computer Science and Engineering CSE - 2 (2026–2030)<br>Website Directory</h2>
+
+<div id="controls">
+  <select id="sortSelect">
+    <option value="nameAsc">Sort: Name A → Z</option>
+    <option value="nameDesc">Sort: Name Z → A</option>
+  </select>
+</div>
+
+<div id="list"></div>
+
+<script>
+let entriesData = [];
+
+function renderList() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  entriesData.forEach(e => {
+    const card = document.createElement("div");
+    card.className = "entry";
+    card.innerHTML = `
+      <div class="line1">
+         ${e.name} <span class="reg">(${e.reg})</span>
+      </div>
+      <div class="line2">${e.statusHTML}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function sortData(type) {
+  if (type === "nameAsc") entriesData.sort((a,b)=>a.name.localeCompare(b.name));
+  if (type === "nameDesc") entriesData.sort((a,b)=>b.name.localeCompare(a.name));
+  if (type === "regAsc") entriesData.sort((a,b)=>a.reg.localeCompare(b.reg));
+  if (type === "regDesc") entriesData.sort((a,b)=>b.reg.localeCompare(a.reg));
+  if (type === "liveFirst") entriesData.sort((a,b)=>b.isLive - a.isLive);
+  if (type === "deadFirst") entriesData.sort((a,b)=>a.isLive - b.isLive);
+
+  renderList();
+}
+
+document.getElementById("sortSelect").addEventListener("change", e => {
+  sortData(e.target.value);
+});
+
+function processIssues(issues) {
+  const promises = issues.map(issue => {
+    const body = issue.body || "";
+
+    const name = (body.match(/Your Full Name\s*\n([^\n]+)/)?.[1] || "Unknown").trim();
+    const reg = (body.match(/Register Number\s*\n([^\n]+)/)?.[1] || "Unknown").trim();
+    const rawLink = (body.match(/Website Link\s*\n([^\n]+)/)?.[1] || "#").trim();
+
+    let link = rawLink.startsWith("http") ? rawLink : "https://" + rawLink;
+
+    const looksRepo = link.includes("github.com/") && !link.includes("github.io");
+
+    if (looksRepo) {
+      return Promise.resolve({
+        name, reg, isLive: 0,
+        statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>`
+      });
+    }
+
+    return fetch(link, { method: "HEAD" })
+      .then(r => ({
+        name, reg,
+        isLive: r.ok ? 1 : 0,
+        statusHTML: r.ok
+          ? `<a href="${link}" target="_blank" class="link-live">Visit Site ✔</a>`
+          : `<span class="link-dead">Not Live ✖</span>`
+      }))
+      .catch(() => ({
+        name, reg, isLive: 0,
+        statusHTML: `<span class="link-dead">Invalid URL ✖</span>`
+      }));
+  });
+
+  Promise.all(promises).then(results => {
+    entriesData = results;
+    sortData("nameAsc");
+  });
+}
+
+// Fetch GitHub Issues
+fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
+  .then(res => res.json())
+  .then(data => {
+    if (Array.isArray(data) && data.length) {
+      // Filter for issues created strictly after August 31, 2026
+      const cutoffDate = new Date("2026-08-31T23:59:59Z");
+      const filteredData = data.filter(issue => new Date(issue.created_at) > cutoffDate);
+      processIssues(filteredData);
+    } else {
+      throw new Error("No data, using fallback");
+    }
+  })
+  .catch(() => {
+    // MASSIVE fallback dataset (sample)
+    const fallback = [];
+    for (let i=1; i<=50; i++) {
+      fallback.push({
+        name: "Student " + i,
+        reg: "CS25" + String(i).padStart(3,"0"),
+        isLive: i % 2,
+        statusHTML: i % 2
+          ? `<a href="https://example${i}.com" class="link-live" target="_blank">Visit Site ✔</a>`
+          : `<span class="link-dead">Not Live ✖</span>`
+      });
+    }
+
+    entriesData = fallback;
+    renderList();
+  });
+</script>
+
+</body>
+</html>
