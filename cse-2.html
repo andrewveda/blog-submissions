@@ -117,8 +117,6 @@ function renderList() {
 function sortData(type) {
   if (type === "nameAsc") entriesData.sort((a,b)=>a.name.localeCompare(b.name));
   if (type === "nameDesc") entriesData.sort((a,b)=>b.name.localeCompare(a.name));
-  if (type === "regAsc") entriesData.sort((a,b)=>a.reg.localeCompare(b.reg));
-  if (type === "regDesc") entriesData.sort((a,b)=>b.reg.localeCompare(a.reg));
   if (type === "liveFirst") entriesData.sort((a,b)=>b.isLive - a.isLive);
   if (type === "deadFirst") entriesData.sort((a,b)=>a.isLive - b.isLive);
 
@@ -134,7 +132,6 @@ function processIssues(issues) {
     const body = issue.body || "";
 
     const name = (body.match(/Your Full Name\s*\n([^\n]+)/)?.[1] || "Unknown").trim();
-    const reg = (body.match(/Register Number\s*\n([^\n]+)/)?.[1] || "Unknown").trim();
     const rawLink = (body.match(/Website Link\s*\n([^\n]+)/)?.[1] || "#").trim();
 
     let link = rawLink.startsWith("http") ? rawLink : "https://" + rawLink;
@@ -143,21 +140,21 @@ function processIssues(issues) {
 
     if (looksRepo) {
       return Promise.resolve({
-        name, reg, isLive: 0,
+        name, isLive: 0,
         statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>`
       });
     }
 
     return fetch(link, { method: "HEAD" })
       .then(r => ({
-        name, reg,
+        name,
         isLive: r.ok ? 1 : 0,
         statusHTML: r.ok
           ? `<a href="${link}" target="_blank" class="link-live">Visit Site ✔</a>`
           : `<span class="link-dead">Not Live ✖</span>`
       }))
       .catch(() => ({
-        name, reg, isLive: 0,
+        name, isLive: 0,
         statusHTML: `<span class="link-dead">Invalid URL ✖</span>`
       }));
   });
