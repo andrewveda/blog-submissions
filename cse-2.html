@@ -70,11 +70,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .reg {
-    font-weight: 500;
-    color: #8c7654; /* Muted bronze */
-  }
-
   .line2 {
     font-size: 0.95rem;
   }
@@ -111,7 +106,7 @@ function renderList() {
     card.className = "entry";
     card.innerHTML = `
       <div class="line1">
-         ${e.name} <span class="reg">(${e.reg})</span>
+         ${e.name}
       </div>
       <div class="line2">${e.statusHTML}</div>
     `;
@@ -175,32 +170,33 @@ function processIssues(issues) {
 
 // Fetch GitHub Issues
 fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to fetch from GitHub API");
+    return res.json();
+  })
   .then(data => {
-    if (Array.isArray(data) && data.length) {
+    if (Array.isArray(data) && data.length > 0) {
       // Filter for issues created strictly after August 31, 2026
       const cutoffDate = new Date("2026-08-31T23:59:59Z");
       const filteredData = data.filter(issue => new Date(issue.created_at) > cutoffDate);
-      processIssues(filteredData);
+      
+      if (filteredData.length > 0) {
+        processIssues(filteredData);
+      } else {
+        // Render blank if there are no submissions after the cutoff
+        entriesData = [];
+        renderList();
+      }
     } else {
-      throw new Error("No data, using fallback");
+      // Render blank if data array is empty
+      entriesData = [];
+      renderList();
     }
   })
-  .catch(() => {
-    // MASSIVE fallback dataset (sample)
-    const fallback = [];
-    for (let i=1; i<=50; i++) {
-      fallback.push({
-        name: "Student " + i,
-        reg: "CS25" + String(i).padStart(3,"0"),
-        isLive: i % 2,
-        statusHTML: i % 2
-          ? `<a href="https://example${i}.com" class="link-live" target="_blank">Visit Site ✔</a>`
-          : `<span class="link-dead">Not Live ✖</span>`
-      });
-    }
-
-    entriesData = fallback;
+  .catch(error => {
+    // If the API request fails (e.g., rate limit, network error), leave it blank
+    console.error(error);
+    entriesData = [];
     renderList();
   });
 </script>
