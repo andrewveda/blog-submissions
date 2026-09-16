@@ -86,7 +86,44 @@
 <div id="list"></div>
 
 <script>
-let entriesData = [];
+let entriesData = [
+  { name: "AKSHAYA N", reg: "25CY001", isLive: 1, statusHTML: `<a href="https://akshaya27-stack.github.io/Blog/" target="_blank" class="link-live">Visit Site ✔</a>` },
+
+{ name: "Barath Chand Pach", reg: "25CY004", isLive: 1, statusHTML: `<a href="https://barry-chand.github.io/Blog/" target="_blank" class="link-live">Visit Site ✔</a>` },
+
+
+
+
+  { name: "BHUMIKA.B", reg: "25CY005", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "DHAYALAN K", reg: "25CY007", isLive: 1, statusHTML: `<a href="https://lyqorrr.github.io/blog/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "DHINAKARAN K K", reg: "25CYS008", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "F. KESHINI", reg: "142225128021", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "GUNASEELAN V", reg: "25CY013", isLive: 1, statusHTML: `<a href="https://gunaseelanvijayaragavan.github.io/blog/index.html" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "GURU VIGNESH C", reg: "25CYS014", isLive: 0, statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>` },
+  { name: "JAYASURYA", reg: "25CY015", isLive: 1, statusHTML: `<a href="https://kgjayasurya20-max.github.io/jayasurya.github.io/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "KARTHIKEYAN P", reg: "25CY018", isLive: 1, statusHTML: `<a href="https://s5676bhn.github.io/Karthikeyan.github.io/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "KAVITHASHREE", reg: "27may2008", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "KAVITHASHREE B", reg: "27may2008", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "MAHATHI . S", reg: "25CY022", isLive: 1, statusHTML: `<a href="https://maha19-03.github.io/mahathi.github.io/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "MEENAKSHI B", reg: "25CY023", isLive: 0, statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>` },
+  { name: "MEGARSHITH PACHA", reg: "Unknown", isLive: 1, statusHTML: `<a href="https://achu1234nn.github.io/spped/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "MONESH R", reg: "25CYS025", isLive: 0, statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>` },
+  { name: "MONESH R", reg: "25CYS025", isLive: 0, statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>` },
+  { name: "NAVEEN.R", reg: "25CY026", isLive: 1, statusHTML: `<a href="https://naveen-cyber-web.github.io/Naveen-cyber-web/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "NAVEENA M S", reg: "Unknown", isLive: 0, statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>` },
+  { name: "NETHRA", reg: "Unknown", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "NETHRA", reg: "8778320341", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "NIVETHA V", reg: "Unknown", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "PAVITHRA S", reg: "10 June 2009", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "POORNASHRI S", reg: "Unknown", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "RITHIK", reg: "25cy033", isLive: 1, statusHTML: `<a href="https://rk-rithik.github.io/Rithik.github.io/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "S NIMISHA SRI", reg: "25CY027", isLive: 1, statusHTML: `<a href="https://Nimishasekar30.github.io" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "S NIMISHA SRI", reg: "25CY027", isLive: 1, statusHTML: `<a href="https://Nimishasekar30.github.io" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "SWETHA .S", reg: "25CY038", isLive: 1, statusHTML: `<a href="https://swetha2007sudha-eng.github.io/Blog-/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "VINOTH KUMAR", reg: "25CYS042", isLive: 0, statusHTML: `<span class="link-dead">Invalid URL ✖</span>` },
+  { name: "VISHMITHA D", reg: "25CY043", isLive: 1, statusHTML: `<a href="https://vishmithad07-stack.github.io/Blog-/" target="_blank" class="link-live">Visit Site ✔</a>` },
+  { name: "VISHMITHA D", reg: "25CY043", isLive: 0, statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>` }
+];
 
 function renderList() {
   const list = document.getElementById("list");
@@ -108,11 +145,7 @@ function renderList() {
 function sortData(type) {
   if (type === "nameAsc") entriesData.sort((a,b)=>a.name.localeCompare(b.name));
   if (type === "nameDesc") entriesData.sort((a,b)=>b.name.localeCompare(a.name));
-  if (type === "regAsc") entriesData.sort((a,b)=>a.reg.localeCompare(b.reg));
-  if (type === "regDesc") entriesData.sort((a,b)=>b.reg.localeCompare(a.reg));
-  if (type === "liveFirst") entriesData.sort((a,b)=>b.isLive - a.isLive);
-  if (type === "deadFirst") entriesData.sort((a,b)=>a.isLive - b.isLive);
-
+  
   renderList();
 }
 
@@ -120,72 +153,9 @@ document.getElementById("sortSelect").addEventListener("change", e => {
   sortData(e.target.value);
 });
 
-function processIssues(issues) {
-  const promises = issues.map(issue => {
-    const body = issue.body || "";
+// Initialize app with sorting
+sortData("nameAsc");
 
-    const name = (body.match(/Your Full Name\s*\n([^\n]+)/)?.[1] || "Unknown").trim();
-    const reg = (body.match(/Register Number\s*\n([^\n]+)/)?.[1] || "Unknown").trim();
-    const rawLink = (body.match(/Website Link\s*\n([^\n]+)/)?.[1] || "#").trim();
-
-    let link = rawLink.startsWith("http") ? rawLink : "https://" + rawLink;
-
-    const looksRepo = link.includes("github.com/") && !link.includes("github.io");
-
-    if (looksRepo) {
-      return Promise.resolve({
-        name, reg, isLive: 0,
-        statusHTML: `<span class="link-dead">Invalid: GitHub Repo Link ✖</span>`
-      });
-    }
-
-    return fetch(link, { method: "HEAD" })
-      .then(r => ({
-        name, reg,
-        isLive: r.ok ? 1 : 0,
-        statusHTML: r.ok
-          ? `<a href="${link}" target="_blank" class="link-live">Visit Site ✔</a>`
-          : `<span class="link-dead">Not Live ✖</span>`
-      }))
-      .catch(() => ({
-        name, reg, isLive: 0,
-        statusHTML: `<span class="link-dead">Invalid URL ✖</span>`
-      }));
-  });
-
-  Promise.all(promises).then(results => {
-    entriesData = results;
-    sortData("nameAsc");
-  });
-}
-
-// Fetch GitHub Issues
-fetch("https://api.github.com/repos/andrewveda/blog-submissions/issues")
-  .then(res => res.json())
-  .then(data => {
-    if (Array.isArray(data) && data.length) {
-      processIssues(data);
-    } else {
-      throw new Error("No data, using fallback");
-    }
-  })
-  .catch(() => {
-    // MASSIVE fallback dataset (sample)
-    const fallback = [];
-    for (let i=1; i<=50; i++) {
-      fallback.push({
-        name: "Student " + i,
-        reg: "CS25" + String(i).padStart(3,"0"),
-        isLive: i % 2,
-        statusHTML: i % 2
-          ? `<a href="https://example${i}.com" class="link-live" target="_blank">Visit Site ✔</a>`
-          : `<span class="link-dead">Not Live ✖</span>`
-      });
-    }
-
-    entriesData = fallback;
-    renderList();
-  });
 </script>
 
 </body>
